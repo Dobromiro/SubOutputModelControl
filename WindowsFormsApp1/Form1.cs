@@ -18,6 +18,7 @@ namespace WindowsFormsApp1
         MySqlConnection connection;
         public ComboBox ComboBox1 { get; private set; }
         private string EAJ;
+
         public Form1()
         {
             InitializeComponent();
@@ -27,7 +28,10 @@ namespace WindowsFormsApp1
             string connectionString = "Server=192.168.230.170;port=3306;username=user;password=mati;database=tcon"; // Zmień na właściwe dane połączenia
             connection = new MySqlConnection(connectionString);
             EAJ = "";
+
         }
+
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -99,13 +103,17 @@ namespace WindowsFormsApp1
                 }
                 else
                 {
-                    InfoLabel.Text = "NG TAKE OUT MODULE FROM LINE";
+                    InfoLabel.Text = "NG: TAKE OUT MODULE FROM LINE";
                     InfoLabel.ForeColor = Color.Red;
                     label2.Text = "NG";
                     label2.ForeColor = Color.Red;
 
+
+
+                    //label2.ForeColor = Color.Red;
+
                     System.Media.SoundPlayer player = new System.Media.SoundPlayer();
-                    player.SoundLocation = "alarm.mp3"; // Ścieżka do pliku dźwiękowego alarm.wav
+                    player.SoundLocation = "alarm.wav"; // Ścieżka do pliku dźwiękowego alarm.wav
                     player.Play();
                 }
             }));
