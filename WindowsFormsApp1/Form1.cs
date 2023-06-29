@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using MySql.Data.MySqlClient;
+//using Microsoft.Toolkit.Uwp.UI.Controls;
 
 namespace WindowsFormsApp1
 {
@@ -24,7 +25,7 @@ namespace WindowsFormsApp1
             serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
 
             // Dodaj kontrolkę TextBox do formularza
-            string connectionString = "Server=192.168.230.170;port=3306;username=user;password=mati;database=tcon"; // Zmień na właściwe dane połączenia
+            string connectionString = "Server=10.207.120.95;port=3306;username=user;password=mati;database=tcon"; // Zmień na właściwe dane połączenia
             connection = new MySqlConnection(connectionString);
             EAJ = "";
         }
@@ -32,7 +33,8 @@ namespace WindowsFormsApp1
         private void Form1_Load(object sender, EventArgs e)
         {
             // Ustawienia parametrów połączenia
-            serialPort.PortName = "COM8";
+            serialPort.PortName = "COM12";
+            //serialPort.PortName = "COM12";
             serialPort.BaudRate = 9600;
             serialPort.DataBits = 8;
             serialPort.Parity = Parity.None;
@@ -74,6 +76,8 @@ namespace WindowsFormsApp1
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             // Odczytanie danych z portu i wyświetlenie ich w polu tekstowym
+            //ClearPort();
+            //serialPort.Open();
             string data = serialPort.ReadExisting();
             string temp_data = "";
             string LGEPN = "";
@@ -84,8 +88,12 @@ namespace WindowsFormsApp1
                 textBox2.Text = "";
                 textBox2.AppendText(data);
                 temp_data = data;
-                LGEPN = data.Substring(9, 8);
-                LGEPN = "EAJ" + LGEPN;
+                if (data != "NOREAD\r\n")
+                {
+                    LGEPN = data.Substring(9, 8);
+                    LGEPN = "EAJ" + LGEPN;
+                }
+
             }));
 
             InfoLabel.Invoke(new Action(() =>
@@ -105,7 +113,7 @@ namespace WindowsFormsApp1
                     label2.ForeColor = Color.Red;
 
                     System.Media.SoundPlayer player = new System.Media.SoundPlayer();
-                    player.SoundLocation = "alarm.mp3"; // Ścieżka do pliku dźwiękowego alarm.wav
+                    player.SoundLocation = "alarm.wav"; // Ścieżka do pliku dźwiękowego alarm.wav
                     player.Play();
                 }
             }));
@@ -116,6 +124,7 @@ namespace WindowsFormsApp1
         {
             try
             {
+                ClearPort();
                 serialPort.Open();
                 textBox1.AppendText("Connected" + Environment.NewLine);
             }
@@ -147,6 +156,7 @@ namespace WindowsFormsApp1
         {
             try
             {
+                ClearPort();
                 serialPort.Open();
                 textBox1.AppendText("Connected" + Environment.NewLine);
             }
@@ -248,11 +258,20 @@ namespace WindowsFormsApp1
             }
             // e.Handled = true;
         }
-
+        private void ClearPort()
+        {
+            if (serialPort.IsOpen)
+            {
+                serialPort.DiscardInBuffer();
+                serialPort.DiscardOutBuffer();
+                serialPort.Close();
+            }
+        }
         private void button3_Click(object sender, EventArgs e)
         {
             try
             {
+                
                 connection.Open();
 
                 string query = $"SELECT * FROM `common_all` WHERE `HS_PN` LIKE '%{textBox3.Text}'"; // Zmień na właściwe zapytanie SQL
@@ -299,6 +318,18 @@ namespace WindowsFormsApp1
         {
 
         }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+       /* private void ShowPopup_Click(object sender, EventArgs e)
+        {
+            Popup myPopup = new Popup();
+            myPopup.Content = "To jest okienko pop-up.";
+            myPopup.Show();
+        }*/
     }
 }
 
